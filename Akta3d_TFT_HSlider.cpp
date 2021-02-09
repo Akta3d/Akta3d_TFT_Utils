@@ -47,6 +47,9 @@ void Akta3d_TFT_HSlider::initHSliderUL(
   _hText = 0;
   _wText = 0;
   if(_withText) {
+    _tft->setFont(NULL);
+    _tft->setTextSize(_textSize);
+
     String minText = _text + " : " + _min;
     int16_t XMin, YMin; // variables needed to use getTextBounds()
     uint16_t WMin, HMin;
@@ -65,7 +68,12 @@ void Akta3d_TFT_HSlider::initHSliderUL(
     }
 
     _xText = _x;
-    _yText = _y + ((_h - _hText) / 2);   
+    _yText = _y + ((_h - _hText) / 2);  
+
+    // compute _nbCharForValue
+     String maxStr = String(_max);
+     String minStr = String(_min);
+     _nbCharForValue = max(maxStr.length(), minStr.length());
   }
 
   _xSlider = _x;
@@ -93,9 +101,10 @@ void Akta3d_TFT_HSlider::update(Akta3d_Touch_Info touchInfo) {
 
       drawCursor(_fillColor);
 
+      int lastValue = _value;
       _value = newValue;
 
-      if(_value <= _min || _value >= _max) {
+      if((lastValue == _min && _value == _min + 1) || (lastValue == _max && _value == _max - 1)) {
         drawHSlider(); // redraw all, to redraw slider if cursor was on min/max limit
       } else {
         drawValue();
@@ -129,7 +138,11 @@ void Akta3d_TFT_HSlider::drawValue() {
     _tft->setFont(NULL);
     _tft->setTextSize(_textSize);
     _tft->setCursor(_xText , _yText);
-    String realText = _text + " : " + _value;
+    String valueStr = String(_value);
+    for(int i = valueStr.length() ; i < _nbCharForValue ; i+=1) {
+      valueStr = " " + valueStr;
+    }
+    String realText = _text + " : " + valueStr;
     _tft->print(realText);
   }
 }

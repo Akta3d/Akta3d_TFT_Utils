@@ -59,6 +59,7 @@ class Akta3d_TFT_HSlider
     uint16_t _textSize;
     uint16_t _marginText;
     String _text;
+    uint16_t _nbCharForValue; // nbChar needed to write value : "-30" = 3;
     bool _withText;
 
     uint16_t _xSlider;
